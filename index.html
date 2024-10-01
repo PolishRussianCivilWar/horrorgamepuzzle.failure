@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>30-Room Cursed Puzzle Game</title>
+    <style>
+        body {
+            background-color: #0b0c10;
+            color: #66fcf1;
+            font-family: 'Courier New', Courier, monospace;
+            text-align: center;
+            transition: background 0.5s, color 0.5s;
+        }
+        h1, h2 {
+            color: #45a29e;
+        }
+        .room {
+            display: none;
+        }
+        .active {
+            display: block;
+        }
+        .code-box, .answer-box {
+            margin-top: 20px;
+        }
+        .timer {
+            color: red;
+            font-size: 1.4em;
+            margin-top: 10px;
+        }
+        .game-over, .jumpscare {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            color: #fff;
+            font-size: 3em;
+            z-index: 999;
+            justify-content: center;
+            align-items: center;
+        }
+        .inventory {
+            margin-top: 20px;
+            list-style: none;
+            color: #c5c6c7;
+        }
+    </style>
+</head>
+<body>
+    <h1>The Cursed Puzzle Game</h1>
+    <p>You have entered a strange, cursed place. Escape if you can.</p>
+
+    <!-- Room 1 -->
+    <div id="room1" class="room active">
+        <h2>Room 1</h2>
+        <div class="code-box">
+            <label for="code1">Enter the 4-digit code: </label>
+            <input type="text" id="code1" placeholder="4 digits">
+            <button onclick="checkCode(1)">Submit</button>
+            <div class="result" id="result1"></div>
+        </div>
+        <div class="timer" id="timer1">Time left: 5 minutes</div>
+    </div>
+
+    <!-- Room 2 -->
+    <div id="room2" class="room">
+        <h2>Room 2</h2>
+        <div class="answer-box">
+            <label for="answer2">Enter the answer: </label>
+            <input type="text" id="answer2" placeholder="Type your answer">
+            <button onclick="checkAnswer(2)">Submit</button>
+            <div class="result" id="result2"></div>
+        </div>
+        <div class="timer" id="timer2">Time left: 5 minutes</div>
+    </div>
+
+    <!-- Room 3 -->
+    <div id="room3" class="room">
+        <h2>Room 3</h2>
+        <div class="code-box">
+            <label for="code3">Enter the 10-letter password: </label>
+            <input type="text" id="code3" placeholder="10 letters">
+            <button onclick="checkCode(3)">Submit</button>
+            <div class="result" id="result3"></div>
+        </div>
+        <div class="timer" id="timer3">Time left: 5 minutes</div>
+    </div>
+
+    <!-- Continue for Rooms 4 to 30 -->
+    <!-- Similar structure for each room, with alternating input types -->
+
+    <div class="game-over" id="game-over">Game Over. The curse remains...</div>
+
+    <ul class="inventory" id="inventory">
+        <li>Inventory:</li>
+    </ul>
+
+    <script>
+        let currentRoom = 1;
+        let timer;
+        const inventory = [];
+
+        function checkCode(room) {
+            const codeInput = document.getElementById(`code${room}`);
+            const result = document.getElementById(`result${room}`);
+
+            const correctCodes = {
+                1: '1234',      // 4-digit code
+                3: 'darkcurse'  // 10-letter password
+            };
+
+            if (codeInput.value === correctCodes[room]) {
+                result.innerHTML = 'Correct!';
+                nextRoom();
+            } else {
+                result.innerHTML = 'Wrong code... try again.';
+            }
+        }
+
+        function checkAnswer(room) {
+            const answerInput = document.getElementById(`answer${room}`);
+            const result = document.getElementById(`result${room}`);
+
+            const correctAnswers = {
+                2: 'shadow'
+            };
+
+            if (answerInput.value.toLowerCase() === correctAnswers[room]) {
+                result.innerHTML = 'Correct!';
+                nextRoom();
+            } else {
+                result.innerHTML = 'Wrong answer... try again.';
+            }
+        }
+
+        function nextRoom() {
+            if (currentRoom < 30) {
+                document.getElementById(`room${currentRoom}`).classList.remove('active');
+                currentRoom++;
+                document.getElementById(`room${currentRoom}`).classList.add('active');
+                startTimer(currentRoom);
+            } else {
+                document.getElementById('game-over').style.display = 'block';
+            }
+        }
+
+        function startTimer(room) {
+            let timeLeft = 5 * 60;  // 5 minutes in seconds
+            let timerDisplay = document.getElementById(`timer${room}`);
+            timer = setInterval(function() {
+                if (timeLeft > 0) {
+                    let minutes = Math.floor(timeLeft / 60);
+                    let seconds = timeLeft % 60;
+                    timerDisplay.innerHTML = `Time left: ${minutes} minutes ${seconds} seconds`;
+                    timeLeft--;
+                } else {
+                    clearInterval(timer);
+                    timerDisplay.innerHTML = 'You failed...';
+                    document.getElementById('game-over').style.display = 'block';
+                    setTimeout(() => location.reload(), 2000);  // Reset game after failure
+                }
+            }, 1000);
+        }
+
+        startTimer(currentRoom);
+    </script>
+</body>
+</html>
